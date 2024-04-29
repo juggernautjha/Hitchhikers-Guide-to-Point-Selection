@@ -51,7 +51,7 @@ def pad_and_encode(word : str, length : int = 31):
     wrd_lst = [C_T_I[i] for i in word]
     lng = length - len(word) if length >= len(word) else 0 
     wrd_lst = wrd_lst + lng*[0]
-    return wrd_lst
+    return wrd_lst[:length]
 
 def get_probability_vector(input : str, output : str):
         """Get the probability vector.
