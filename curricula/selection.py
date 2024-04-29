@@ -91,3 +91,41 @@ class maxnorm_selector:
         
         return selected_indices
 
+
+
+class autoencoder_loss:
+    def __init__(self, target_model : tf.keras.Model, irred_model : tf.keras.Model, minibatch_size : float, loss : tf.keras.losses.Loss = tf.keras.losses.MeanSquaredError(
+    reduction='sum_over_batch_size',
+    name='mean_squared_error'
+)):
+        self.target_model = target_model
+        self.irred_model = irred_model
+        self.minibatch_size = minibatch_size
+        self.loss = loss
+        
+    def __call__(self,
+                 x : np.ndarray,
+                 y : np.ndarray) ->tf.Tensor:
+        """Given a batch, selects the subset of the batch that maximizes the rholoss
+
+        Args:
+            target_model (tf.keras.Model): model to train
+            irred_model (tf.keras.Model): model pretrained on holdout dataset
+            batch (tf.Tensor): batch of data 
+            minibatch_size (float): proportion the minibatch needed to be selected
+
+        Returns:
+            tf.Tensor: indices to train on
+        """
+        irred_points = self.irred_model(x)
+        red_points = self.target_model(x)
+        reducible_loss = K.mean(K.square(x -red_points), axis=[-1,-2])
+
+        # print(reducible_loss)
+        irreducible_loss = K.mean(K.square(x -irred_points), axis=[-1,-2])
+        rholoss = reducible_loss - irreducible_loss
+
+        selected_indices = tf.argsort(rholoss, direction='DESCENDING')[:int(self.minibatch_size * len(rholoss))]
+        
+        return selected_indices
+
