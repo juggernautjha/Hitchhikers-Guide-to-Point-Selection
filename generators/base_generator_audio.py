@@ -91,7 +91,8 @@ class BaseClassificationGenerator(Sequence):
     
     #! We will use the default options for spectrogram
     clip = 1000
-    def __init__(self, param, base_dir : str, batch_size : int = 16, shuffle : bool = True, gentype : str = 'train', return_spec : bool = False, return_fft : bool = False, ext : str = 'flac'):
+    def __init__(self, param, base_dir : str, batch_size : int = 16, shuffle : bool = True, gentype : str = 'train', return_spec : bool = False, return_fft : bool = False, ext : str = 'flac', clip : int = 1000):
+        self.clip = clip
         self.ext = ext
         self.base_dir = base_dir
         self.batch_size = batch_size
@@ -206,9 +207,9 @@ class BaseClassificationGenerator(Sequence):
 
 
 class rho_generator_audio(BaseClassificationGenerator):
-    def __init__(self, param, base_dir : str, batch_size : int = 16, shuffle : bool = True, gentype : str = 'train', return_spec : bool = False, return_fft : bool = False, ext : str = 'flac', 
+    def __init__(self, param, base_dir : str, batch_size : int = 16, shuffle : bool = True, gentype : str = 'train', return_spec : bool = False, return_fft : bool = False, ext : str = 'flac', clip : int = 1000, 
                  selector = None, irred_model : str = '', target_model : str = '', target_model_path : str = '', epoch_cutoff : int = 3, minibatch_size : float = 0.6, loss : tf.keras.losses.Loss = tf.keras.losses.categorical_crossentropy):
-        super().__init__(param, base_dir, batch_size, shuffle, gentype, return_spec, return_fft, ext)
+        super().__init__(param, base_dir, batch_size, shuffle, gentype, return_spec, return_fft, ext, clip)
         self.selector = selector
         self.irred_model = irred_model
         self.target_model_path = target_model_path
